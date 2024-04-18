@@ -2076,6 +2076,11 @@ MonoBehaviour:
   rightSmallArmRigidbody: {fileID: 2081216520}
   leftSmallArmRigidbody: {fileID: 1636864706}
   middleBodyRigidbody: {fileID: 1809603206}
+  lowerBodyRigidbody: {fileID: 313037467}
+  rightThighRigidbody: {fileID: 2064505294}
+  leftThighRigidbody: {fileID: 537475259}
+  rightCalfRigidbody: {fileID: 900027424}
+  leftCalfRigidbody: {fileID: 524952992}
   rotationSpeed: 100
 --- !u!114 &1078204573
 MonoBehaviour:
@@ -2093,7 +2098,7 @@ MonoBehaviour:
     VectorObservationSize: 3
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 7
+      m_NumContinuousActions: 13
       BranchSizes: 01000000
     VectorActionSize: 
     VectorActionDescriptions: []
