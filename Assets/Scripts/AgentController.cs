@@ -123,8 +123,8 @@ public class AgentController : Agent
 	public override void Heuristic(in ActionBuffers actionsOut)
 	{
 		ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        continuousActions[11] = Input.GetAxisRaw("Horizontal"); // left and right
-		continuousActions[12] = Input.GetAxisRaw("Vertical"); // up and down 
+        continuousActions[0] = Input.GetAxisRaw("Horizontal"); // left and right
+		continuousActions[1] = Input.GetAxisRaw("Vertical"); // up and down 
 	}
 	
 	void Update()
