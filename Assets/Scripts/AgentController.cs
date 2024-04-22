@@ -7,7 +7,7 @@ using Unity.MLAgents.Sensors;
 
 public class AgentController : Agent
 {
-	[SerializeField] private Transform head;
+	[SerializeField] private Rigidbody head;
 	[SerializeField] private Rigidbody rightSmallArmRigidbody;
 	[SerializeField] private Rigidbody leftSmallArmRigidbody;
 	[SerializeField] private Rigidbody middleBodyRigidbody;
@@ -17,11 +17,11 @@ public class AgentController : Agent
 	[SerializeField] private Rigidbody rightCalfRigidbody;
 	[SerializeField] private Rigidbody leftCalfRigidbody;
 	
-	public float rotationSpeed = 100f;
+	public float rotationSpeed = 1000f;
 	
 	public override void OnEpisodeBegin()
 	{
-		transform.localPosition = new Vector3(0f, 3f, 0f);
+		transform.localPosition = new Vector3(0f, 2.5f, 0f);
 	}
 	
 	public override void CollectObservations(VectorSensor sensor)
@@ -31,9 +31,9 @@ public class AgentController : Agent
 	
     public override void OnActionReceived(ActionBuffers actions)
     {
-		// Rotation actions for the head
-		float headRotationY = actions.ContinuousActions[0];
-		float headRotationZ = actions.ContinuousActions[1];
+		// Actions for the head
+		float headTorqueY = actions.ContinuousActions[0];
+		float headTorqueZ = actions.ContinuousActions[1];
 		
         // Actions for the right small arm
 		float rightTorqueX = actions.ContinuousActions[2];
@@ -62,14 +62,8 @@ public class AgentController : Agent
 		// Action for the left calf
 		float leftCalfTorqueY = actions.ContinuousActions[12];
 		
-		// Apply the head rotation
-		Vector3 currentHeadRotation = head.localEulerAngles;
-		Vector3 newHeadRotation = new Vector3(
-			currentHeadRotation.x,
-			currentHeadRotation.y + headRotationY * rotationSpeed * Time.deltaTime,
-			ClampAngle(currentHeadRotation.z + headRotationZ * rotationSpeed * Time.deltaTime, -30f, 30f)
-		);
-		head.localEulerAngles = newHeadRotation;
+		// Apply the head torque
+		head.AddRelativeTorque(new Vector3(0, headTorqueY, headTorqueZ) * rotationSpeed);
 
 		// Apply the right and left small arms' torque
 		rightSmallArmRigidbody.AddRelativeTorque(new Vector3(rightTorqueX, rightTorqueY, 0) * rotationSpeed);
@@ -82,16 +76,16 @@ public class AgentController : Agent
 		lowerBodyRigidbody.AddRelativeTorque(new Vector3(0, lowerBodyTorqueY, lowerBodyTorqueZ) * rotationSpeed);
 		
 		// Apply the torque to the right thigh's Rigidbody
-		rightThighRigidbody.AddRelativeTorque(Vector3.forward * rightThighTorqueY * 10f);
+		rightThighRigidbody.AddRelativeTorque(Vector3.forward * rightThighTorqueY * rotationSpeed);
 		
 		// Apply the torque to the left thigh's Rigidbody
-		leftThighRigidbody.AddRelativeTorque(Vector3.forward * leftThighTorqueY * 10f);
+		leftThighRigidbody.AddRelativeTorque(Vector3.forward * leftThighTorqueY * rotationSpeed);
 		
 		// Apply the torque to the right calf's Rigidbody
-		rightCalfRigidbody.AddRelativeTorque(Vector3.forward * rightCalfTorqueY * 2f);
+		rightCalfRigidbody.AddRelativeTorque(Vector3.forward * rightCalfTorqueY * rotationSpeed);
 		
 		// Apply the torque to the left calf's Rigidbody
-		leftCalfRigidbody.AddRelativeTorque(Vector3.forward * leftCalfTorqueY * 2f);
+		leftCalfRigidbody.AddRelativeTorque(Vector3.forward * leftCalfTorqueY * rotationSpeed);
     }
 	
 	private float ClampAngle(float angle, float min, float max)
@@ -114,10 +108,11 @@ public class AgentController : Agent
 			// AddReward(2f);
 			// EndEpisode();
 		// }
-		// if(other.gameObject.tag == "Obstacle")
-		// {
-			// AddReward(-1f);
-		// }
+		if(other.gameObject.tag == "Obstacle")
+		{
+			AddReward(1f);
+			EndEpisode();
+		}
 	}
 	
 	public override void Heuristic(in ActionBuffers actionsOut)
@@ -127,11 +122,11 @@ public class AgentController : Agent
 		continuousActions[1] = Input.GetAxisRaw("Vertical"); // up and down 
 	}
 	
-	void Update()
-	{
-		if (Input.anyKey)
-		{
-			RequestDecision();
-		}
-	}
+	// void Update()
+	// {
+		// if (Input.anyKey)
+		// {
+			// RequestDecision();
+		// }
+	// }
 }
