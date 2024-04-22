@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
-
+using TMPro;
 public class AgentController : Agent
 {
 	[SerializeField] private Transform head;
@@ -16,17 +16,23 @@ public class AgentController : Agent
 	[SerializeField] private Rigidbody leftThighRigidbody;
 	[SerializeField] private Rigidbody rightCalfRigidbody;
 	[SerializeField] private Rigidbody leftCalfRigidbody;
-	
+	[SerializeField] private Transform target;
+	[SerializeField] private Timer timer;
+
 	public float rotationSpeed = 100f;
+	public float distance;
+	//parameter setting
+	public float trainingTimePerEpisode = 3;
 	
 	public override void OnEpisodeBegin()
 	{
-		transform.localPosition = new Vector3(0f, 3f, 0f);
+		transform.localPosition = new Vector3(-4f, 1f, 1f);
 	}
 	
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		sensor.AddObservation(transform.localPosition);
+		sensor.AddObservation(target.localPosition);
 	}
 	
     public override void OnActionReceived(ActionBuffers actions)
@@ -92,6 +98,15 @@ public class AgentController : Agent
 		
 		// Apply the torque to the left calf's Rigidbody
 		leftCalfRigidbody.AddRelativeTorque(Vector3.forward * leftCalfTorqueY * 2f);
+
+	
+		// Reward Based on Distance
+		distance = Vector3.Distance(transform.localPosition,target.localPosition);
+		AddReward(-distance/10f); //the larger the worse; divide by 10 to reduce the scale
+		print(target.localPosition);
+		print(transform.localPosition);
+		print(distance);
+
     }
 	
 	private float ClampAngle(float angle, float min, float max)
@@ -109,15 +124,25 @@ public class AgentController : Agent
 	
 	private void OntriggerEnter(Collider other)
 	{
-		// if(other.gameObject.tag == "Finpad")
-		// {
-			// AddReward(2f);
-			// EndEpisode();
-		// }
-		// if(other.gameObject.tag == "Obstacle")
-		// {
-			// AddReward(-1f);
-		// }
+
+		if(other.gameObject.tag == "Goal"){
+			print("Triggered by:" + other.gameObject.tag);
+			AddReward(10f); //huge reward when robot reach the goal
+			EndEpisode();
+		}
+
+		if(other.gameObject.tag == "Wall"){
+			print("Triggered by:" + other.gameObject.tag);
+			AddReward(-10f); // Add huge penalty when robot hit on the wall
+			EndEpisode();
+		}
+		if(other.gameObject.tag == "Start"){
+			print("Triggered by:" + other.gameObject.tag);
+			EndEpisode();
+		}
+
+		print("Triggered detected but not in if statement" + other.gameObject.tag);
+
 	}
 	
 	public override void Heuristic(in ActionBuffers actionsOut)
@@ -129,9 +154,16 @@ public class AgentController : Agent
 	
 	void Update()
 	{
-		if (Input.anyKey)
-		{
-			RequestDecision();
+		// if (Input.anyKey)
+		// {
+		// 	RequestDecision();
+		// }
+		//RequestDecision();
+		RequestAction();
+		print("Training time limit is:"+ trainingTimePerEpisode);
+		if (timer.elapsedTime > trainingTimePerEpisode){
+			print("Time to End");
+			EndEpisode();
 		}
 	}
 }
