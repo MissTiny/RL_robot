@@ -285,9 +285,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6149847704215100777, guid: eaf6612845c3916449296c86a75c2922, type: 3}
+      propertyPath: agent
+      value: 
+      objectReference: {fileID: 1856584402}
+    - target: {fileID: 6149847704215100777, guid: eaf6612845c3916449296c86a75c2922, type: 3}
+      propertyPath: distanceText
+      value: 
+      objectReference: {fileID: 1617487026}
     - target: {fileID: 6431589684484144809, guid: eaf6612845c3916449296c86a75c2922, type: 3}
       propertyPath: m_Name
       value: Env1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7501723403517027555, guid: eaf6612845c3916449296c86a75c2922, type: 3}
+      propertyPath: m_ObservableAttributeHandling
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8007408910604654472, guid: eaf6612845c3916449296c86a75c2922, type: 3}
       propertyPath: Timer
@@ -404,3 +416,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 14.099, y: 180.16, z: 0.445}
+--- !u!114 &1617487026 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3256309222478290505, guid: eaf6612845c3916449296c86a75c2922, type: 3}
+  m_PrefabInstance: {fileID: 743162764}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1856584402 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8007408910604654472, guid: eaf6612845c3916449296c86a75c2922, type: 3}
+  m_PrefabInstance: {fileID: 743162764}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba440a94e52ec144921a42ffc83adb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
