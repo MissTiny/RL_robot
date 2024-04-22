@@ -49,6 +49,8 @@ ExportedObj/
 # Enviornment
 RLvenv/
 
+# Result
+results/
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
