@@ -103,11 +103,6 @@ public class AgentController : Agent
 	
 	private void OntriggerEnter(Collider other)
 	{
-		// if(other.gameObject.tag == "Finpad")
-		// {
-			// AddReward(2f);
-			// EndEpisode();
-		// }
 		if(other.gameObject.tag == "Obstacle")
 		{
 			AddReward(1f);
@@ -121,12 +116,4 @@ public class AgentController : Agent
         continuousActions[0] = Input.GetAxisRaw("Horizontal"); // left and right
 		continuousActions[1] = Input.GetAxisRaw("Vertical"); // up and down 
 	}
-	
-	// void Update()
-	// {
-		// if (Input.anyKey)
-		// {
-			// RequestDecision();
-		// }
-	// }
 }
