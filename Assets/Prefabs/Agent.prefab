@@ -2688,7 +2688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 7
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 13
@@ -2745,6 +2745,7 @@ MonoBehaviour:
   rightCalfRigidbody: {fileID: 5435137339394364876}
   leftCalfRigidbody: {fileID: 4198592984113649774}
   timerText: {fileID: 0}
+  goal: {fileID: 0}
   rotationSpeed: 1000
 --- !u!1 &7168869369343756993
 GameObject:

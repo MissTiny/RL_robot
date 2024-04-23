@@ -18,22 +18,33 @@ public class AgentController : Agent
 	[SerializeField] private Rigidbody rightCalfRigidbody;
 	[SerializeField] private Rigidbody leftCalfRigidbody;
 	
-	[SerializeField] private TextMeshProUGUI  timerText;
+	[SerializeField] private TextMeshProUGUI timerText;
+	
+	[SerializeField] private Transform goal;
 	
 	public float rotationSpeed = 1000f;
 	
 	private float episodeTimer = 60f;
+	private float maxDiffDistance;
 	
 	public override void OnEpisodeBegin()
 	{
 		UpdateTimerDisplay();
 		episodeTimer = 60f;
+		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
 		transform.localPosition = new Vector3(0f, 2.5f, 0f);
 	}
 	
 	public override void CollectObservations(VectorSensor sensor)
 	{
+		// Observation of the agent's local position
 		sensor.AddObservation(transform.localPosition);
+		
+		// Observation for the goal's relative position with respect to agent
+		Vector3 relativePosition = goal.position - transform.position;
+		sensor.AddObservation(relativePosition);
+		
+		// Observation of the countdown
 		sensor.AddObservation(episodeTimer);
 	}
 	
@@ -43,6 +54,11 @@ public class AgentController : Agent
         UpdateTimerDisplay();
         if (episodeTimer <= 0f)
         {
+			float distanceToGoal = Vector3.Distance(transform.position, goal.position);
+			float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
+			
+			AddReward(distReward);
+			
             EndEpisode();
         }
 		
@@ -107,7 +123,13 @@ public class AgentController : Agent
 	{
 		if(other.gameObject.tag == "Obstacle")
 		{
-			AddReward(1f);
+			AddReward(-1f);
+		}
+		
+		if(other.gameObject.tag == "Goal")
+		{
+			AddReward(10f);
+			AddReward(Mathf.CeilToInt(episodeTimer));
 			EndEpisode();
 		}
 	}
