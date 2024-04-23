@@ -389,3 +389,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 739223933}
+  smoothTime: 0.3

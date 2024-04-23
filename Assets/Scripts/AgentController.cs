@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,40 +9,120 @@ using TMPro;
 
 public class AgentController : Agent
 {
-	[SerializeField] private Rigidbody head;
-	[SerializeField] private Rigidbody rightSmallArmRigidbody;
-	[SerializeField] private Rigidbody leftSmallArmRigidbody;
-	[SerializeField] private Rigidbody middleBodyRigidbody;
-	[SerializeField] private Rigidbody lowerBodyRigidbody;
-	[SerializeField] private Rigidbody rightThighRigidbody;
-	[SerializeField] private Rigidbody leftThighRigidbody;
-	[SerializeField] private Rigidbody rightCalfRigidbody;
-	[SerializeField] private Rigidbody leftCalfRigidbody;
+	[SerializeField] private Rigidbody[] bodyParts;
+	
+	// [SerializeField] private Rigidbody head;
+	// [SerializeField] private Rigidbody rightSmallArmRigidbody;
+	// [SerializeField] private Rigidbody leftSmallArmRigidbody;
+	// [SerializeField] private Rigidbody middleBodyRigidbody;
+	// [SerializeField] private Rigidbody lowerBodyRigidbody;
+	// [SerializeField] private Rigidbody rightThighRigidbody;
+	// [SerializeField] private Rigidbody leftThighRigidbody;
+	// [SerializeField] private Rigidbody rightCalfRigidbody;
+	// [SerializeField] private Rigidbody leftCalfRigidbody;
 	
 	[SerializeField] private TextMeshProUGUI timerText;
 	
 	[SerializeField] private Transform goal;
 	
+	private Vector3[] initialPositions;
+    private Quaternion[] initialRotations;
+	
 	public float rotationSpeed = 1000f;
 	
-	private float episodeTimer = 60f;
+	private float episodeTimer = 65f;
 	private float maxDiffDistance;
+	
+	void Start()
+	{
+		Time.timeScale = 1f;
+	}
+	
+	public override void Initialize()
+    {
+        // Initialize the arrays to the number of body parts
+        initialPositions = new Vector3[bodyParts.Length];
+        initialRotations = new Quaternion[bodyParts.Length];
+
+        // Store the initial positions and rotations
+        for (int i = 0; i < bodyParts.Length; i++)
+        {
+            if (bodyParts[i] != null)
+            {
+                initialPositions[i] = bodyParts[i].position;
+                initialRotations[i] = bodyParts[i].rotation;
+            }
+        }
+    }
 	
 	public override void OnEpisodeBegin()
 	{
 		UpdateTimerDisplay();
-		episodeTimer = 60f;
+		episodeTimer = 65f;
 		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
-		transform.localPosition = new Vector3(0f, 2.5f, 0f);
+		// transform.localPosition = new Vector3(0f, 2.5f, 0f);
+		StartCoroutine(ResetBodyParts());
+	}
+	
+	private IEnumerator ResetBodyParts()
+	{
+		// Disable physics interactions while resetting
+		foreach (var bodyPart in bodyParts)
+		{
+			if (bodyPart != null)
+			{
+				bodyPart.detectCollisions = false;
+				bodyPart.isKinematic = true;
+			}
+		}
+
+		float resetDuration = 5f; // Half a second to reset
+		float timer = 0;
+
+		while (timer < resetDuration)
+		{
+			foreach (var bodyPart in bodyParts)
+			{
+				if (bodyPart != null)
+				{
+					int index = Array.IndexOf(bodyParts, bodyPart);
+					bodyPart.MovePosition(Vector3.Lerp(bodyPart.position, initialPositions[index], timer / resetDuration));
+					bodyPart.MoveRotation(Quaternion.Slerp(bodyPart.rotation, initialRotations[index], timer / resetDuration));
+				}
+			}
+
+			timer += Time.deltaTime;
+			yield return null;
+		}
+
+		// Ensure all body parts are exactly at their initial positions and rotations
+		for (int i = 0; i < bodyParts.Length; i++)
+		{
+			if (bodyParts[i] != null)
+			{
+				bodyParts[i].MovePosition(initialPositions[i]);
+				bodyParts[i].MoveRotation(initialRotations[i]);
+			}
+		}
+
+		// Re-enable physics interactions
+		foreach (var bodyPart in bodyParts)
+		{
+			if (bodyPart != null)
+			{
+				bodyPart.isKinematic = false;
+				bodyPart.detectCollisions = true;
+			}
+		}
 	}
 	
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		// Observation of the agent's local position
-		sensor.AddObservation(transform.localPosition);
+		sensor.AddObservation(bodyParts[0].position);
 		
 		// Observation for the goal's relative position with respect to agent
-		Vector3 relativePosition = goal.position - transform.position;
+		Vector3 relativePosition = goal.position - bodyParts[0].position;
 		sensor.AddObservation(relativePosition);
 		
 		// Observation of the countdown
@@ -54,69 +135,55 @@ public class AgentController : Agent
         UpdateTimerDisplay();
         if (episodeTimer <= 0f)
         {
-			float distanceToGoal = Vector3.Distance(transform.position, goal.position);
+			float distanceToGoal = Vector3.Distance(bodyParts[0].position, goal.position);
 			float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
 			
 			AddReward(distReward);
 			
+			Debug.Log($"Distance Reward: {distReward}");
+			
             EndEpisode();
         }
 		
-		// Actions for the head
-		float headTorqueY = actions.ContinuousActions[0];
-		float headTorqueZ = actions.ContinuousActions[1];
-		
-        // Actions for the right small arm
-		float rightTorqueX = actions.ContinuousActions[2];
-		float rightTorqueY = -Mathf.Abs(actions.ContinuousActions[3]);
+		for (int i = 0; i < bodyParts.Length; i++)
+		{
+			if (bodyParts[i] != null)
+			{
+				Vector3 torque = Vector3.zero;
+				switch (i)
+				{
+					case 0: // Head
+						torque = new Vector3(0, actions.ContinuousActions[0], actions.ContinuousActions[1]);
+						break;
+					case 1: // Right Small Arm
+						torque = new Vector3(actions.ContinuousActions[2], -Mathf.Abs(actions.ContinuousActions[3]), 0);
+						break;
+					case 2: // Left Small Arm
+						torque = new Vector3(actions.ContinuousActions[4], Mathf.Abs(actions.ContinuousActions[5]), 0);
+						break;
+					case 3: // Middle Body
+						torque = Vector3.forward * actions.ContinuousActions[6];
+						break;
+					case 4: // Lower Body
+						torque = new Vector3(0, actions.ContinuousActions[7], actions.ContinuousActions[8]);
+						break;
+					case 5: // Right Thigh
+						torque = Vector3.forward * actions.ContinuousActions[9];
+						break;
+					case 6: // Left Thigh
+						torque = Vector3.forward * actions.ContinuousActions[10];
+						break;
+					case 7: // Right Calf
+						torque = Vector3.forward * actions.ContinuousActions[11];
+						break;
+					case 8: // Left Calf
+						torque = Vector3.forward * actions.ContinuousActions[12];
+						break;
+				}
 
-		// Actions for the left small arm
-		float leftTorqueX = actions.ContinuousActions[4];
-		float leftTorqueY = Mathf.Abs(actions.ContinuousActions[5]);
-		
-		// Action for the middle body's rotation
-		float middleBodyTorqueY = actions.ContinuousActions[6];
-		
-		// Actions for the lower body
-		float lowerBodyTorqueY = actions.ContinuousActions[7];
-		float lowerBodyTorqueZ = actions.ContinuousActions[8];
-		
-		// Action for the right thigh
-		float rightThighTorqueY = actions.ContinuousActions[9];
-		
-		// Action for the left thigh
-		float leftThighTorqueY = actions.ContinuousActions[10];
-		
-		// Action for the right calf
-		float rightCalfTorqueY = actions.ContinuousActions[11];
-		
-		// Action for the left calf
-		float leftCalfTorqueY = actions.ContinuousActions[12];
-		
-		// Apply the head torque
-		head.AddRelativeTorque(new Vector3(0, headTorqueY, headTorqueZ) * rotationSpeed);
-
-		// Apply the right and left small arms' torque
-		rightSmallArmRigidbody.AddRelativeTorque(new Vector3(rightTorqueX, rightTorqueY, 0) * rotationSpeed);
-		leftSmallArmRigidbody.AddRelativeTorque(new Vector3(leftTorqueX, leftTorqueY, 0) * rotationSpeed);
-		
-		// Apply the middle body's torque
-		middleBodyRigidbody.AddRelativeTorque(Vector3.forward * middleBodyTorqueY * rotationSpeed);
-		
-		// Apply the torque to the lower body's Rigidbody
-		lowerBodyRigidbody.AddRelativeTorque(new Vector3(0, lowerBodyTorqueY, lowerBodyTorqueZ) * rotationSpeed);
-		
-		// Apply the torque to the right thigh's Rigidbody
-		rightThighRigidbody.AddRelativeTorque(Vector3.forward * rightThighTorqueY * rotationSpeed);
-		
-		// Apply the torque to the left thigh's Rigidbody
-		leftThighRigidbody.AddRelativeTorque(Vector3.forward * leftThighTorqueY * rotationSpeed);
-		
-		// Apply the torque to the right calf's Rigidbody
-		rightCalfRigidbody.AddRelativeTorque(Vector3.forward * rightCalfTorqueY * rotationSpeed);
-		
-		// Apply the torque to the left calf's Rigidbody
-		leftCalfRigidbody.AddRelativeTorque(Vector3.forward * leftCalfTorqueY * rotationSpeed);
+				bodyParts[i].AddRelativeTorque(torque * rotationSpeed);
+			}
+		}
     }
 	
 	private void OntriggerEnter(Collider other)

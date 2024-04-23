@@ -2654,7 +2654,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6282564093001879874}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 2.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2735,6 +2735,16 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  bodyParts:
+  - {fileID: 5434617337627319865}
+  - {fileID: 4253968371380006237}
+  - {fileID: 3407383327321023521}
+  - {fileID: 5147784398746055527}
+  - {fileID: 8198584568887889023}
+  - {fileID: 8833765567807791277}
+  - {fileID: 5311380999148417701}
+  - {fileID: 5435137339394364876}
+  - {fileID: 4198592984113649774}
   head: {fileID: 5434617337627319865}
   rightSmallArmRigidbody: {fileID: 4253968371380006237}
   leftSmallArmRigidbody: {fileID: 3407383327321023521}
