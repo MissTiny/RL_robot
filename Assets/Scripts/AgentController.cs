@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using TMPro;
 
 public class AgentController : Agent
 {
@@ -17,20 +18,34 @@ public class AgentController : Agent
 	[SerializeField] private Rigidbody rightCalfRigidbody;
 	[SerializeField] private Rigidbody leftCalfRigidbody;
 	
+	[SerializeField] private TextMeshProUGUI  timerText;
+	
 	public float rotationSpeed = 1000f;
+	
+	private float episodeTimer = 60f;
 	
 	public override void OnEpisodeBegin()
 	{
+		UpdateTimerDisplay();
+		episodeTimer = 60f;
 		transform.localPosition = new Vector3(0f, 2.5f, 0f);
 	}
 	
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		sensor.AddObservation(transform.localPosition);
+		sensor.AddObservation(episodeTimer);
 	}
 	
     public override void OnActionReceived(ActionBuffers actions)
     {
+		episodeTimer -= Time.deltaTime;
+        UpdateTimerDisplay();
+        if (episodeTimer <= 0f)
+        {
+            EndEpisode();
+        }
+		
 		// Actions for the head
 		float headTorqueY = actions.ContinuousActions[0];
 		float headTorqueZ = actions.ContinuousActions[1];
@@ -88,19 +103,6 @@ public class AgentController : Agent
 		leftCalfRigidbody.AddRelativeTorque(Vector3.forward * leftCalfTorqueY * rotationSpeed);
     }
 	
-	private float ClampAngle(float angle, float min, float max)
-	{
-		angle = NormalizeAngle(angle);
-		return Mathf.Clamp(angle, min, max);
-	}
-	
-	private float NormalizeAngle(float angle)
-	{
-		while (angle > 180f) angle -= 360f;
-		while (angle < -180f) angle += 360f;
-		return angle;
-	}
-	
 	private void OntriggerEnter(Collider other)
 	{
 		if(other.gameObject.tag == "Obstacle")
@@ -115,5 +117,26 @@ public class AgentController : Agent
 		ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         continuousActions[0] = Input.GetAxisRaw("Horizontal"); // left and right
 		continuousActions[1] = Input.GetAxisRaw("Vertical"); // up and down 
+	}
+	
+	private void UpdateTimerDisplay()
+    {
+        if (timerText != null)
+		{
+			timerText.text = $"{Mathf.CeilToInt(episodeTimer)}";
+		}
+    }
+	
+	private float ClampAngle(float angle, float min, float max)
+	{
+		angle = NormalizeAngle(angle);
+		return Mathf.Clamp(angle, min, max);
+	}
+	
+	private float NormalizeAngle(float angle)
+	{
+		while (angle > 180f) angle -= 360f;
+		while (angle < -180f) angle += 360f;
+		return angle;
 	}
 }
