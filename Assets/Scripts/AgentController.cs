@@ -28,9 +28,11 @@ public class AgentController : Agent
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
 	
-	public float rotationSpeed = 8000f;
+	public float rotationSpeed = 800000000f;
 	
 	private float episodeTimer = 65f;
+	
+	// private float prevDistanceToGoal;
 	private float maxDiffDistance;
 	
 	void Start()
@@ -53,6 +55,7 @@ public class AgentController : Agent
                 initialRotations[i] = bodyParts[i].rotation;
             }
         }
+		// prevDistanceToGoal = Vector3.Distance(goal.position, transform.position);
     }
 	
 	public override void OnEpisodeBegin()
@@ -60,7 +63,7 @@ public class AgentController : Agent
 		UpdateTimerDisplay();
 		episodeTimer = 65f;
 		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
-		// transform.localPosition = new Vector3(0f, 2.5f, 0f);
+		
 		StartCoroutine(ResetBodyParts());
 	}
 	
@@ -122,12 +125,16 @@ public class AgentController : Agent
 		Vector3 centroid = CalculateCentroid();
 		sensor.AddObservation(centroid);
 		
+		// sensor.AddObservation(prevDistanceToGoal);
+		
 		// Observation for the goal's relative position with respect to agent
 		Vector3 relativePosition = goal.position - centroid;
 		sensor.AddObservation(relativePosition);
 		
+		sensor.AddObservation(goal.position);
+		
 		// Observation of the countdown
-		sensor.AddObservation(episodeTimer);
+		// sensor.AddObservation(episodeTimer);
 	}
 	
     public override void OnActionReceived(ActionBuffers actions)
@@ -137,11 +144,27 @@ public class AgentController : Agent
         if (episodeTimer <= 0f)
         {
 			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
-			float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
+			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
+			// float distReward = -distanceToGoal;
+			// float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
+			// float distReward = Mathf.Exp(-distanceToGoal) * 5f;
 			
 			AddReward(distReward);
 			
-			Debug.Log($"Distance Reward: {distReward}");
+			// float currentDistanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
+			
+			// if (currentDistanceToGoal < prevDistanceToGoal)
+			// {
+				// AddReward(1.0f);
+				// Debug.Log($"Distance Reward: {distReward} + 1");
+			// }
+			// else
+			// {
+				// AddReward(-1.0f);
+				// Debug.Log($"Distance Reward: {distReward} - 1");
+			// }
+			
+			// prevDistanceToGoal = currentDistanceToGoal;
 			
             EndEpisode();
         }
@@ -162,23 +185,26 @@ public class AgentController : Agent
 					case 2: // Left Small Arm
 						torque = new Vector3(actions.ContinuousActions[4], Mathf.Abs(actions.ContinuousActions[5]), 0);
 						break;
-					case 3: // Middle Body
+					case 3: // Upper Body
 						torque = Vector3.forward * actions.ContinuousActions[6];
 						break;
-					case 4: // Lower Body
-						torque = new Vector3(0, actions.ContinuousActions[7], actions.ContinuousActions[8]);
+					case 4: // Middle Body
+						torque = Vector3.forward * actions.ContinuousActions[7];
 						break;
-					case 5: // Right Thigh
-						torque = Vector3.forward * actions.ContinuousActions[9];
+					case 5: // Lower Body
+						torque = new Vector3(0, actions.ContinuousActions[8], actions.ContinuousActions[9]);
 						break;
-					case 6: // Left Thigh
+					case 6: // Right Thigh
 						torque = Vector3.forward * actions.ContinuousActions[10];
 						break;
-					case 7: // Right Calf
+					case 7: // Left Thigh
 						torque = Vector3.forward * actions.ContinuousActions[11];
 						break;
-					case 8: // Left Calf
+					case 8: // Right Calf
 						torque = Vector3.forward * actions.ContinuousActions[12];
+						break;
+					case 9: // Left Calf
+						torque = Vector3.forward * actions.ContinuousActions[13];
 						break;
 				}
 
@@ -223,8 +249,8 @@ public class AgentController : Agent
 	public override void Heuristic(in ActionBuffers actionsOut)
 	{
 		ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = Input.GetAxisRaw("Horizontal"); // left and right
-		continuousActions[1] = Input.GetAxisRaw("Vertical"); // up and down 
+        continuousActions[1] = Input.GetAxisRaw("Horizontal"); // left and right
+		continuousActions[6] = Input.GetAxisRaw("Vertical"); // up and down 
 	}
 	
 	private void UpdateTimerDisplay()
@@ -246,5 +272,13 @@ public class AgentController : Agent
 		while (angle > 180f) angle -= 360f;
 		while (angle < -180f) angle += 360f;
 		return angle;
+	}
+	
+	void Update()
+	{
+		if (Input.anyKey)
+		{
+			RequestDecision();
+		}
 	}
 }
