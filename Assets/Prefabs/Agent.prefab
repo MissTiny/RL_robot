@@ -1616,7 +1616,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 3
+    limit: 26.813578
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -1662,7 +1662,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 3
+    limit: 30.753515
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -2266,7 +2266,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 3
+    limit: 24.283527
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -2476,7 +2476,7 @@ CharacterJoint:
     spring: 0
     damper: 0
   m_Swing1Limit:
-    limit: 10.388369
+    limit: 40.14403
     bounciness: 0
     contactDistance: 0
   m_Swing2Limit:
@@ -2745,18 +2745,9 @@ MonoBehaviour:
   - {fileID: 5311380999148417701}
   - {fileID: 5435137339394364876}
   - {fileID: 4198592984113649774}
-  head: {fileID: 5434617337627319865}
-  rightSmallArmRigidbody: {fileID: 4253968371380006237}
-  leftSmallArmRigidbody: {fileID: 3407383327321023521}
-  middleBodyRigidbody: {fileID: 5147784398746055527}
-  lowerBodyRigidbody: {fileID: 8198584568887889023}
-  rightThighRigidbody: {fileID: 8833765567807791277}
-  leftThighRigidbody: {fileID: 5311380999148417701}
-  rightCalfRigidbody: {fileID: 5435137339394364876}
-  leftCalfRigidbody: {fileID: 4198592984113649774}
   timerText: {fileID: 0}
   goal: {fileID: 0}
-  rotationSpeed: 1000
+  rotationSpeed: 8000
 --- !u!1 &7168869369343756993
 GameObject:
   m_ObjectHideFlags: 0

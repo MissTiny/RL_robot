@@ -28,7 +28,7 @@ public class AgentController : Agent
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
 	
-	public float rotationSpeed = 1000f;
+	public float rotationSpeed = 8000f;
 	
 	private float episodeTimer = 65f;
 	private float maxDiffDistance;
@@ -119,10 +119,11 @@ public class AgentController : Agent
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		// Observation of the agent's local position
-		sensor.AddObservation(bodyParts[0].position);
+		Vector3 centroid = CalculateCentroid();
+		sensor.AddObservation(centroid);
 		
 		// Observation for the goal's relative position with respect to agent
-		Vector3 relativePosition = goal.position - bodyParts[0].position;
+		Vector3 relativePosition = goal.position - centroid;
 		sensor.AddObservation(relativePosition);
 		
 		// Observation of the countdown
@@ -135,7 +136,7 @@ public class AgentController : Agent
         UpdateTimerDisplay();
         if (episodeTimer <= 0f)
         {
-			float distanceToGoal = Vector3.Distance(bodyParts[0].position, goal.position);
+			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
 			float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
 			
 			AddReward(distReward);
@@ -186,7 +187,25 @@ public class AgentController : Agent
 		}
     }
 	
-	private void OntriggerEnter(Collider other)
+	private Vector3 CalculateCentroid()
+	{
+		Vector3 centroid = Vector3.zero;
+		int count = 0;
+		foreach (var bodyPart in bodyParts)
+		{
+			if (bodyPart != null)
+			{
+				centroid += bodyPart.position;
+				count++;
+			}
+		}
+		if (count > 0)
+			centroid /= count;
+
+		return centroid;
+	}
+	
+	private void OnTriggerEnter(Collider other)
 	{
 		if(other.gameObject.tag == "Obstacle")
 		{
