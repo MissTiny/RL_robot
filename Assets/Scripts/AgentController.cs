@@ -31,8 +31,6 @@ public class AgentController : Agent
 	public float rotationSpeed = 800000000f;
 	
 	private float episodeTimer = 65f;
-	
-	// private float prevDistanceToGoal;
 	private float maxDiffDistance;
 	
 	void Start()
@@ -45,6 +43,8 @@ public class AgentController : Agent
         // Initialize the arrays to the number of body parts
         initialPositions = new Vector3[bodyParts.Length];
         initialRotations = new Quaternion[bodyParts.Length];
+		
+		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
 
         // Store the initial positions and rotations
         for (int i = 0; i < bodyParts.Length; i++)
@@ -55,14 +55,12 @@ public class AgentController : Agent
                 initialRotations[i] = bodyParts[i].rotation;
             }
         }
-		// prevDistanceToGoal = Vector3.Distance(goal.position, transform.position);
     }
 	
 	public override void OnEpisodeBegin()
 	{
 		UpdateTimerDisplay();
 		episodeTimer = 65f;
-		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
 		
 		StartCoroutine(ResetBodyParts());
 	}
@@ -121,9 +119,16 @@ public class AgentController : Agent
 	
 	public override void CollectObservations(VectorSensor sensor)
 	{
+		
+		// foreach (Rigidbody bodyPart in bodyParts)
+		// {
+			// Vector3 localPosition = bodyPart.position;
+			// sensor.AddObservation(localPosition);
+		// }
+		
 		// Observation of the agent's local position
 		Vector3 centroid = CalculateCentroid();
-		sensor.AddObservation(centroid);
+		// sensor.AddObservation(centroid);
 		
 		// sensor.AddObservation(prevDistanceToGoal);
 		
@@ -135,6 +140,21 @@ public class AgentController : Agent
 		
 		// Observation of the countdown
 		// sensor.AddObservation(episodeTimer);
+		
+		for (int i = 0; i < bodyParts.Length; i++)
+		{
+			if (i == 0 || i == 2 || i == 3)
+			{
+				Rigidbody bodyPart = bodyParts[i];
+				// Add local position relative to the centroid (or global position if more appropriate)
+				Vector3 localPosition = bodyPart.transform.localPosition;
+				sensor.AddObservation(localPosition);
+
+				// Add local rotation (consider converting quaternion to Euler angles if necessary)
+				Vector3 localRotation = bodyPart.transform.localRotation.eulerAngles;
+				sensor.AddObservation(localRotation);
+			}
+		}
 	}
 	
     public override void OnActionReceived(ActionBuffers actions)
@@ -145,26 +165,10 @@ public class AgentController : Agent
         {
 			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
-			// float distReward = -distanceToGoal;
+			// float distReward = (maxDiffDistance-distanceToGoal) / maxDiffDistance;
 			// float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
-			// float distReward = Mathf.Exp(-distanceToGoal) * 5f;
 			
 			AddReward(distReward);
-			
-			// float currentDistanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
-			
-			// if (currentDistanceToGoal < prevDistanceToGoal)
-			// {
-				// AddReward(1.0f);
-				// Debug.Log($"Distance Reward: {distReward} + 1");
-			// }
-			// else
-			// {
-				// AddReward(-1.0f);
-				// Debug.Log($"Distance Reward: {distReward} - 1");
-			// }
-			
-			// prevDistanceToGoal = currentDistanceToGoal;
 			
             EndEpisode();
         }
@@ -179,32 +183,32 @@ public class AgentController : Agent
 					case 0: // Head
 						torque = new Vector3(0, actions.ContinuousActions[0], actions.ContinuousActions[1]);
 						break;
-					case 1: // Right Small Arm
-						torque = new Vector3(actions.ContinuousActions[2], -Mathf.Abs(actions.ContinuousActions[3]), 0);
+					// case 1: // Right Small Arm
+						// torque = new Vector3(actions.ContinuousActions[2], -Mathf.Abs(actions.ContinuousActions[3]), 0);
+						// break;
+					// case 2: // Left Small Arm
+						// torque = new Vector3(actions.ContinuousActions[4], Mathf.Abs(actions.ContinuousActions[5]), 0);
+						// break;
+					case 1: // Upper Body
+						torque = Vector3.forward * actions.ContinuousActions[2];
 						break;
-					case 2: // Left Small Arm
-						torque = new Vector3(actions.ContinuousActions[4], Mathf.Abs(actions.ContinuousActions[5]), 0);
+					case 2: // Middle Body
+						torque = Vector3.forward * actions.ContinuousActions[3];
 						break;
-					case 3: // Upper Body
+					case 3: // Lower Body
+						torque = new Vector3(0, actions.ContinuousActions[4], actions.ContinuousActions[5]);
+						break;
+					case 4: // Right Thigh
 						torque = Vector3.forward * actions.ContinuousActions[6];
 						break;
-					case 4: // Middle Body
+					case 5: // Left Thigh
 						torque = Vector3.forward * actions.ContinuousActions[7];
 						break;
-					case 5: // Lower Body
-						torque = new Vector3(0, actions.ContinuousActions[8], actions.ContinuousActions[9]);
+					case 6: // Right Calf
+						torque = Vector3.forward * actions.ContinuousActions[8];
 						break;
-					case 6: // Right Thigh
-						torque = Vector3.forward * actions.ContinuousActions[10];
-						break;
-					case 7: // Left Thigh
-						torque = Vector3.forward * actions.ContinuousActions[11];
-						break;
-					case 8: // Right Calf
-						torque = Vector3.forward * actions.ContinuousActions[12];
-						break;
-					case 9: // Left Calf
-						torque = Vector3.forward * actions.ContinuousActions[13];
+					case 7: // Left Calf
+						torque = Vector3.forward * actions.ContinuousActions[9];
 						break;
 				}
 
@@ -250,7 +254,7 @@ public class AgentController : Agent
 	{
 		ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         continuousActions[1] = Input.GetAxisRaw("Horizontal"); // left and right
-		continuousActions[6] = Input.GetAxisRaw("Vertical"); // up and down 
+		continuousActions[2] = Input.GetAxisRaw("Vertical"); // up and down 
 	}
 	
 	private void UpdateTimerDisplay()
