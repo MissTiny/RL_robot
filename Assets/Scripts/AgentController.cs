@@ -120,56 +120,47 @@ public class AgentController : Agent
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		
-		// foreach (Rigidbody bodyPart in bodyParts)
-		// {
-			// Vector3 localPosition = bodyPart.position;
-			// sensor.AddObservation(localPosition);
-		// }
+		foreach (Rigidbody bodyPart in bodyParts)
+		{
+			Vector3 localPosition = bodyPart.position;
+			sensor.AddObservation(localPosition);
+
+			Vector3 localRotation = bodyPart.rotation.eulerAngles;
+			sensor.AddObservation(localRotation);
+		}
 		
 		// Observation of the agent's local position
 		Vector3 centroid = CalculateCentroid();
 		// sensor.AddObservation(centroid);
 		
-		// sensor.AddObservation(prevDistanceToGoal);
-		
 		// Observation for the goal's relative position with respect to agent
 		Vector3 relativePosition = goal.position - centroid;
 		sensor.AddObservation(relativePosition);
 		
-		sensor.AddObservation(goal.position);
+		// sensor.AddObservation(goal.position);
 		
 		// Observation of the countdown
 		// sensor.AddObservation(episodeTimer);
-		
-		for (int i = 0; i < bodyParts.Length; i++)
-		{
-			if (i == 0 || i == 2 || i == 3)
-			{
-				Rigidbody bodyPart = bodyParts[i];
-				// Add local position relative to the centroid (or global position if more appropriate)
-				Vector3 localPosition = bodyPart.transform.localPosition;
-				sensor.AddObservation(localPosition);
-
-				// Add local rotation (consider converting quaternion to Euler angles if necessary)
-				Vector3 localRotation = bodyPart.transform.localRotation.eulerAngles;
-				sensor.AddObservation(localRotation);
-			}
-		}
 	}
 	
     public override void OnActionReceived(ActionBuffers actions)
     {
+		float previousTime = Mathf.CeilToInt(episodeTimer);
 		episodeTimer -= Time.deltaTime;
+		float currentTime = Mathf.CeilToInt(episodeTimer);
         UpdateTimerDisplay();
-        if (episodeTimer <= 0f)
-        {
+		
+		if (currentTime != previousTime && currentTime <= 60)
+		{
 			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
 			// float distReward = (maxDiffDistance-distanceToGoal) / maxDiffDistance;
 			// float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
-			
 			AddReward(distReward);
-			
+			Debug.Log($"Time: {currentTime}s, Distance to Goal: {distanceToGoal}, Reward: {distReward}");
+		}
+        if (episodeTimer <= 0f)
+        {
             EndEpisode();
         }
 		

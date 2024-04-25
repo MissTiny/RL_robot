@@ -1,0 +1,65 @@
+{
+    "Agent Controller": {
+        "checkpoints": [
+            {
+                "steps": 12499630,
+                "file_path": "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-12499630.onnx",
+                "reward": -223.93960656060113,
+                "creation_time": 1714023579.1625574,
+                "auxillary_file_paths": [
+                    "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-12499630.pt"
+                ]
+            },
+            {
+                "steps": 12999480,
+                "file_path": "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-12999480.onnx",
+                "reward": -215.61534792877907,
+                "creation_time": 1714024487.6702075,
+                "auxillary_file_paths": [
+                    "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-12999480.pt"
+                ]
+            },
+            {
+                "steps": 13499980,
+                "file_path": "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-13499980.onnx",
+                "reward": -211.4446055094401,
+                "creation_time": 1714025063.2661867,
+                "auxillary_file_paths": [
+                    "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-13499980.pt"
+                ]
+            },
+            {
+                "steps": 13999830,
+                "file_path": "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-13999830.onnx",
+                "reward": -217.79200744628906,
+                "creation_time": 1714025471.4177084,
+                "auxillary_file_paths": [
+                    "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-13999830.pt"
+                ]
+            },
+            {
+                "steps": 14027780,
+                "file_path": "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-14027780.onnx",
+                "reward": -224.57139587402344,
+                "creation_time": 1714025472.4099112,
+                "auxillary_file_paths": [
+                    "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-14027780.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 14027780,
+            "file_path": "results\\distRewardPerTime06\\Agent Controller.onnx",
+            "reward": -224.57139587402344,
+            "creation_time": 1714025472.4099112,
+            "auxillary_file_paths": [
+                "results\\distRewardPerTime06\\Agent Controller\\Agent Controller-14027780.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.2.2+cu118"
+    }
+}
