@@ -4,4 +4,4 @@ Resource:
     Virtual Enviornment:
         Open Terminal in the project and type: venv\scripts\activate
     Run Experienments:
-        mlagents-learn config/config.yaml -run-id Test01
+        mlagents-learn config/config.yaml --run-id=Test01 --force
