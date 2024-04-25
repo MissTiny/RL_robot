@@ -20,9 +20,11 @@ public class AgentController : Agent
 	
 	[SerializeField] private Transform goal;
 	[SerializeField] private Material goalNormalMaterial;
+	private Vector3 initialGoalPosition;
 	
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
+	
 	
 	public float rotationSpeed = 800000000f;
 	
@@ -52,6 +54,8 @@ public class AgentController : Agent
         initialPositions = new Vector3[bodyParts.Length];
         initialRotations = new Quaternion[bodyParts.Length];
 		
+		initialGoalPosition = goal.position;
+		
 		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
 
         // Store the initial positions and rotations
@@ -71,7 +75,7 @@ public class AgentController : Agent
 		episodeTimer = 65f;
 		
 		// Reset the position and material of the goal
-		goal.position = new Vector3(20, 0.03f, 0);
+		goal.position = initialGoalPosition;
 		Renderer goalRenderer = goal.GetComponent<Renderer>();
 		goalRenderer.material = goalNormalMaterial;
 		
@@ -205,22 +209,29 @@ public class AgentController : Agent
 			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
 			AddReward(distReward);
+			
+			// if (isLeftFootOnFloor)
+			// {
+				// AddReward(0.01f);
+			// }
+			// if (isRightFootOnFloor)
+			// {
+				// AddReward(0.01f);
+			// }
+			
+			// BodyFloorRewards();
+			
+			// if (bodyParts[1].position.y > 1.45f)
+			// {
+				// AddReward(0.01f);
+			// }
 		}
         if (episodeTimer <= 0f)
         {
+			float totalReward = GetCumulativeReward();
+			Debug.Log($"Total reward this episode: {totalReward}");
             EndEpisode();
         }
-		
-		if (isLeftFootOnFloor)
-		{
-			AddReward(0.01f);
-		}
-		if (isRightFootOnFloor)
-		{
-			AddReward(0.01f);
-		}
-		
-		BodyFloorRewards();
 		
 		for (int i = 0; i < bodyParts.Length; i++)
 		{

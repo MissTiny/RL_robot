@@ -353,8 +353,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.9804057, y: 1, z: 1}
+  m_Center: {x: 0.009827257, y: 0, z: 0}
 --- !u!1 &856953924128510361
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,6 +2510,7 @@ MonoBehaviour:
   feet:
   - {fileID: 4789731787500391936}
   - {fileID: 8667446931671162176}
+  bodyFloorMaterial: {fileID: 2100000, guid: 68f350c375d195641b142279aaa8cfbe, type: 2}
   timerText: {fileID: 0}
   goal: {fileID: 0}
   goalNormalMaterial: {fileID: 0}
@@ -3220,8 +3221,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.96233773, y: 1, z: 1}
+  m_Center: {x: 0.018831434, y: 0, z: 0}
 --- !u!1 &9177150986261657186
 GameObject:
   m_ObjectHideFlags: 0
