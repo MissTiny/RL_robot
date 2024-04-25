@@ -10,20 +10,16 @@ using TMPro;
 public class AgentController : Agent
 {
 	[SerializeField] private Rigidbody[] bodyParts;
+	[SerializeField] private Transform[] feet;
+	private bool isLeftFootOnFloor = false;
+	private bool isRightFootOnFloor = false;
 	
-	// [SerializeField] private Rigidbody head;
-	// [SerializeField] private Rigidbody rightSmallArmRigidbody;
-	// [SerializeField] private Rigidbody leftSmallArmRigidbody;
-	// [SerializeField] private Rigidbody middleBodyRigidbody;
-	// [SerializeField] private Rigidbody lowerBodyRigidbody;
-	// [SerializeField] private Rigidbody rightThighRigidbody;
-	// [SerializeField] private Rigidbody leftThighRigidbody;
-	// [SerializeField] private Rigidbody rightCalfRigidbody;
-	// [SerializeField] private Rigidbody leftCalfRigidbody;
+	private Dictionary<string, bool> bodyPartTouchingFloor = new Dictionary<string, bool>();
 	
 	[SerializeField] private TextMeshProUGUI timerText;
 	
 	[SerializeField] private Transform goal;
+	[SerializeField] private Material goalNormalMaterial;
 	
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
@@ -37,6 +33,18 @@ public class AgentController : Agent
 	{
 		Time.timeScale = 1f;
 	}
+	
+	void Awake()
+    {
+        bodyPartTouchingFloor.Add("Head", false);
+        bodyPartTouchingFloor.Add("Upper Body", false);
+        bodyPartTouchingFloor.Add("Middle Body", false);
+        bodyPartTouchingFloor.Add("Lower Body", false);
+        bodyPartTouchingFloor.Add("Right Thigh", false);
+        bodyPartTouchingFloor.Add("Left Thigh", false);
+        // bodyPartTouchingFloor.Add("RightCalf", false);
+        // bodyPartTouchingFloor.Add("LeftCalf", false);
+    }
 	
 	public override void Initialize()
     {
@@ -62,6 +70,11 @@ public class AgentController : Agent
 		UpdateTimerDisplay();
 		episodeTimer = 65f;
 		
+		// Reset the position and material of the goal
+		goal.position = new Vector3(20, 0.03f, 0);
+		Renderer goalRenderer = goal.GetComponent<Renderer>();
+		goalRenderer.material = goalNormalMaterial;
+		
 		StartCoroutine(ResetBodyParts());
 	}
 	
@@ -77,7 +90,7 @@ public class AgentController : Agent
 			}
 		}
 
-		float resetDuration = 5f; // Half a second to reset
+		float resetDuration = 5f; // Five seconds to reset
 		float timer = 0;
 
 		while (timer < resetDuration)
@@ -129,19 +142,56 @@ public class AgentController : Agent
 			sensor.AddObservation(localRotation);
 		}
 		
-		// Observation of the agent's local position
-		Vector3 centroid = CalculateCentroid();
-		// sensor.AddObservation(centroid);
-		
 		// Observation for the goal's relative position with respect to agent
+		Vector3 centroid = CalculateCentroid();
 		Vector3 relativePosition = goal.position - centroid;
 		sensor.AddObservation(relativePosition);
-		
-		// sensor.AddObservation(goal.position);
 		
 		// Observation of the countdown
 		// sensor.AddObservation(episodeTimer);
 	}
+	
+	public void SetFootOnFloor(bool isLeftFoot, bool isTouchingFloor)
+	{
+		if (isLeftFoot)
+		{
+			isLeftFootOnFloor = isTouchingFloor;
+		}
+		else
+		{
+			isRightFootOnFloor = isTouchingFloor;
+		}
+	}
+	
+	public void SetBodyPartOnFloor(string bodyPartName, bool isTouchingFloor)
+    {
+        if (bodyPartTouchingFloor.ContainsKey(bodyPartName))
+        {
+            bodyPartTouchingFloor[bodyPartName] = isTouchingFloor;
+        }
+        else
+        {
+            Debug.LogWarning($"Body part {bodyPartName} not found in dictionary.");
+        }
+    }
+	
+	public void GoalIsPressed()
+	{
+		AddReward(20f);
+		AddReward(episodeTimer);
+		EndEpisode();
+	}
+	
+	public void BodyFloorRewards()
+    {
+        foreach (KeyValuePair<string, bool> entry in bodyPartTouchingFloor)
+        {
+            if (entry.Value)
+            {
+                AddReward(-0.01f);
+            }
+        }
+    }
 	
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -154,15 +204,23 @@ public class AgentController : Agent
 		{
 			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
-			// float distReward = (maxDiffDistance-distanceToGoal) / maxDiffDistance;
-			// float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
 			AddReward(distReward);
-			Debug.Log($"Time: {currentTime}s, Distance to Goal: {distanceToGoal}, Reward: {distReward}");
 		}
         if (episodeTimer <= 0f)
         {
             EndEpisode();
         }
+		
+		if (isLeftFootOnFloor)
+		{
+			AddReward(0.01f);
+		}
+		if (isRightFootOnFloor)
+		{
+			AddReward(0.01f);
+		}
+		
+		BodyFloorRewards();
 		
 		for (int i = 0; i < bodyParts.Length; i++)
 		{
@@ -174,12 +232,6 @@ public class AgentController : Agent
 					case 0: // Head
 						torque = new Vector3(0, actions.ContinuousActions[0], actions.ContinuousActions[1]);
 						break;
-					// case 1: // Right Small Arm
-						// torque = new Vector3(actions.ContinuousActions[2], -Mathf.Abs(actions.ContinuousActions[3]), 0);
-						// break;
-					// case 2: // Left Small Arm
-						// torque = new Vector3(actions.ContinuousActions[4], Mathf.Abs(actions.ContinuousActions[5]), 0);
-						// break;
 					case 1: // Upper Body
 						torque = Vector3.forward * actions.ContinuousActions[2];
 						break;
@@ -226,21 +278,6 @@ public class AgentController : Agent
 		return centroid;
 	}
 	
-	private void OnTriggerEnter(Collider other)
-	{
-		if(other.gameObject.tag == "Obstacle")
-		{
-			AddReward(-1f);
-		}
-		
-		if(other.gameObject.tag == "Goal")
-		{
-			AddReward(10f);
-			AddReward(Mathf.CeilToInt(episodeTimer));
-			EndEpisode();
-		}
-	}
-	
 	public override void Heuristic(in ActionBuffers actionsOut)
 	{
 		ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
@@ -255,19 +292,6 @@ public class AgentController : Agent
 			timerText.text = $"{Mathf.CeilToInt(episodeTimer)}";
 		}
     }
-	
-	private float ClampAngle(float angle, float min, float max)
-	{
-		angle = NormalizeAngle(angle);
-		return Mathf.Clamp(angle, min, max);
-	}
-	
-	private float NormalizeAngle(float angle)
-	{
-		while (angle > 180f) angle -= 360f;
-		while (angle < -180f) angle += 360f;
-		return angle;
-	}
 	
 	void Update()
 	{

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GoalController : MonoBehaviour
 {
+	[SerializeField] private AgentController agentController;
+	
 	public Material normalMaterial;
 	public Material pressedMaterial;
 	public Vector3 pressedPositionOffset = new Vector3(0, -0.05f, 0);
@@ -22,6 +24,7 @@ public class GoalController : MonoBehaviour
             isPressed = true;
             StartCoroutine("MoveButton", transform.position + pressedPositionOffset);
             GetComponent<Renderer>().material = pressedMaterial;
+			agentController.GoalIsPressed();
         }
     }
 	
