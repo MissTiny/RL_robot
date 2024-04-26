@@ -155,6 +155,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Agent
       objectReference: {fileID: 0}
+    - target: {fileID: 4069752025448396315, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 3485cf0af81ba2644b338a5abcb933bc, type: 3}
     - target: {fileID: 4121732023868055423, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
       propertyPath: m_TagString
       value: Agent
@@ -169,11 +173,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5844086594198784900, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.93
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5844086594198784900, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.04
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5844086594198784900, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7870958888482281898, guid: 7503e67d8932df24fa3c1df8f6cf0beb, type: 3}
       propertyPath: m_RootOrder
