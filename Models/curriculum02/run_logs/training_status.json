@@ -1,0 +1,65 @@
+{
+    "Agent Controller": {
+        "checkpoints": [
+            {
+                "steps": 11499671,
+                "file_path": "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-11499671.onnx",
+                "reward": 6.643230940166273,
+                "creation_time": 1714089729.2789369,
+                "auxillary_file_paths": [
+                    "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-11499671.pt"
+                ]
+            },
+            {
+                "steps": 11999521,
+                "file_path": "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-11999521.onnx",
+                "reward": 6.56362179347447,
+                "creation_time": 1714090106.505247,
+                "auxillary_file_paths": [
+                    "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-11999521.pt"
+                ]
+            },
+            {
+                "steps": 12499371,
+                "file_path": "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-12499371.onnx",
+                "reward": 8.27351548936632,
+                "creation_time": 1714090486.3649745,
+                "auxillary_file_paths": [
+                    "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-12499371.pt"
+                ]
+            },
+            {
+                "steps": 12999871,
+                "file_path": "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-12999871.onnx",
+                "reward": 13.901800537109375,
+                "creation_time": 1714090866.578593,
+                "auxillary_file_paths": [
+                    "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-12999871.pt"
+                ]
+            },
+            {
+                "steps": 13248171,
+                "file_path": "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-13248171.onnx",
+                "reward": null,
+                "creation_time": 1714091030.1161845,
+                "auxillary_file_paths": [
+                    "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-13248171.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 13248171,
+            "file_path": "results\\standPerTimeNoModel02\\Agent Controller.onnx",
+            "reward": null,
+            "creation_time": 1714091030.1161845,
+            "auxillary_file_paths": [
+                "results\\standPerTimeNoModel02\\Agent Controller\\Agent Controller-13248171.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.3.0+cu118"
+    }
+}

@@ -18,6 +18,7 @@ public class AgentController : Agent
 	
 	[SerializeField] private TextMeshProUGUI timerText;
 	
+	[SerializeField] private GoalController goalController;
 	[SerializeField] private Transform goal;
 	[SerializeField] private Material goalNormalMaterial;
 	private Vector3 initialGoalPosition;
@@ -78,6 +79,7 @@ public class AgentController : Agent
 		goal.position = initialGoalPosition;
 		Renderer goalRenderer = goal.GetComponent<Renderer>();
 		goalRenderer.material = goalNormalMaterial;
+		goalController.isPressed = false;
 		
 		StartCoroutine(ResetBodyParts());
 	}
@@ -181,6 +183,7 @@ public class AgentController : Agent
 	
 	public void GoalIsPressed()
 	{
+		Debug.Log("Agent hit the pad!");
 		AddReward(20f);
 		AddReward(episodeTimer);
 		EndEpisode();
@@ -192,7 +195,7 @@ public class AgentController : Agent
         {
             if (entry.Value)
             {
-                AddReward(-0.01f);
+                AddReward(-1f);
             }
         }
     }
@@ -210,26 +213,26 @@ public class AgentController : Agent
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
 			AddReward(distReward);
 			
-			// if (isLeftFootOnFloor)
-			// {
-				// AddReward(0.01f);
-			// }
-			// if (isRightFootOnFloor)
-			// {
-				// AddReward(0.01f);
-			// }
+			if (isLeftFootOnFloor)
+			{
+				AddReward(1f);
+			}
+			if (isRightFootOnFloor)
+			{
+				AddReward(1f);
+			}
 			
-			// BodyFloorRewards();
+			BodyFloorRewards();
 			
-			// if (bodyParts[1].position.y > 1.45f)
-			// {
-				// AddReward(0.01f);
-			// }
+			if (bodyParts[1].position.y > 1.45f)
+			{
+				AddReward(2f);
+			}
 		}
         if (episodeTimer <= 0f)
         {
-			float totalReward = GetCumulativeReward();
-			Debug.Log($"Total reward this episode: {totalReward}");
+			// float totalReward = GetCumulativeReward();
+			// Debug.Log($"Total reward this episode: {totalReward}");
             EndEpisode();
         }
 		

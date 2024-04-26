@@ -10,7 +10,7 @@ public class GoalController : MonoBehaviour
 	public Material pressedMaterial;
 	public Vector3 pressedPositionOffset = new Vector3(0, -0.05f, 0);
 	public float speed = 1.0f;
-	private bool isPressed = false;
+	public bool isPressed = false;
 	
 	void Start()
 	{
