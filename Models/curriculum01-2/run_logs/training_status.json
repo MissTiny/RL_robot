@@ -1,0 +1,56 @@
+{
+    "Agent Controller": {
+        "checkpoints": [
+            {
+                "steps": 499850,
+                "file_path": "results\\Test01\\Agent Controller\\Agent Controller-499850.onnx",
+                "reward": 0.9471731185913086,
+                "creation_time": 1714061580.3357255,
+                "auxillary_file_paths": [
+                    "results\\Test01\\Agent Controller\\Agent Controller-499850.pt"
+                ]
+            },
+            {
+                "steps": 999700,
+                "file_path": "results\\Test01\\Agent Controller\\Agent Controller-999700.onnx",
+                "reward": -0.05170893669128418,
+                "creation_time": 1714072203.3169672,
+                "auxillary_file_paths": [
+                    "results\\Test01\\Agent Controller\\Agent Controller-999700.pt"
+                ]
+            },
+            {
+                "steps": 1499550,
+                "file_path": "results\\Test01\\Agent Controller\\Agent Controller-1499550.onnx",
+                "reward": -0.24029270807902017,
+                "creation_time": 1714086179.5522614,
+                "auxillary_file_paths": [
+                    "results\\Test01\\Agent Controller\\Agent Controller-1499550.pt"
+                ]
+            },
+            {
+                "steps": 1721200,
+                "file_path": "results\\Test01\\Agent Controller\\Agent Controller-1721200.onnx",
+                "reward": 0.0054711103439331055,
+                "creation_time": 1714093168.8490202,
+                "auxillary_file_paths": [
+                    "results\\Test01\\Agent Controller\\Agent Controller-1721200.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1721200,
+            "file_path": "results\\Test01\\Agent Controller.onnx",
+            "reward": 0.0054711103439331055,
+            "creation_time": 1714093168.8490202,
+            "auxillary_file_paths": [
+                "results\\Test01\\Agent Controller\\Agent Controller-1721200.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.2.1+cpu"
+    }
+}

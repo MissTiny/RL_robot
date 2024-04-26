@@ -32,7 +32,7 @@ public class AgentController : Agent
 	
 	private float episodeTimer = 65f;
 	private float maxDiffDistance;
-	
+	private float latestDistance;
 	void Start()
 	{
 		Time.timeScale = 1f;
@@ -45,7 +45,7 @@ public class AgentController : Agent
         initialRotations = new Quaternion[bodyParts.Length];
 		
 		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
-
+		
         // Store the initial positions and rotations
         for (int i = 0; i < bodyParts.Length; i++)
         {
@@ -61,8 +61,8 @@ public class AgentController : Agent
 	{
 		UpdateTimerDisplay();
 		episodeTimer = 65f;
-		
 		StartCoroutine(ResetBodyParts());
+		latestDistance  = Vector3.Distance(CalculateCentroid(), goal.position);
 	}
 	
 	private IEnumerator ResetBodyParts()
@@ -152,12 +152,35 @@ public class AgentController : Agent
 		
 		if (currentTime != previousTime && currentTime <= 60)
 		{
-			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
-			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
+			/* Reward 1: Add reward according to distance to goal.
+			*/
+			//float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
+			//float distReward = -Mathf.Exp(0.1f * distanceToGoal);
+			//AddReward(distReward);
 			// float distReward = (maxDiffDistance-distanceToGoal) / maxDiffDistance;
 			// float distReward = 5f - (distanceToGoal / maxDiffDistance) * 5;
+			//AddReward(distReward);
+			
+
+			/* Reward 2: Whenever move forward beyond closest point so far, reward the moving distance. 
+						 Whenever move backward, punish with the backward distance.
+			*/
+			// float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
+			// float distReward = latestDistance - distanceToGoal;
+			// AddReward(distReward);
+			// if (distanceToGoal < latestDistance){
+			// 	latestDistance = distanceToGoal;
+			// }
+
+			/* Reward 3: Whenever move forward, reward the moving distance. 
+						 Whenever move backward, don't add any reward.
+						 Disregard the closest point.
+			*/
+			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
+			float distReward = latestDistance - distanceToGoal;
+			latestDistance = distanceToGoal;
 			AddReward(distReward);
-			Debug.Log($"Time: {currentTime}s, Distance to Goal: {distanceToGoal}, Reward: {distReward}");
+			Debug.Log($"Time: {currentTime}s, Closest Point:{latestDistance}, Distance to Goal: {distanceToGoal}, Reward: {distReward}");
 		}
         if (episodeTimer <= 0f)
         {
