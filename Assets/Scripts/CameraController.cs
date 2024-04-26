@@ -19,7 +19,8 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         float xOffset = agent.position.x - initialAgentPosition.x;
-        Vector3 targetCameraPosition = new Vector3(initialCameraPosition.x + xOffset, initialCameraPosition.y, initialCameraPosition.z);
+        float targetX = Mathf.Clamp(initialCameraPosition.x + xOffset, 4, 18);
+        Vector3 targetCameraPosition = new Vector3(targetX, initialCameraPosition.y, initialCameraPosition.z);
         
         // SmoothDamp to gradually change the camera's position towards the target position
         transform.position = Vector3.SmoothDamp(transform.position, targetCameraPosition, ref cameraVelocity, smoothTime);

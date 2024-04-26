@@ -34,7 +34,7 @@ behaviors:
           memory: null
           goal_conditioning_type: hyper
           deterministic: false
-    init_path: null
+    init_path: Models/curriculum02-2/Agent Controller/Agent Controller-14000002.pt
     keep_checkpoints: 5
     checkpoint_interval: 500000
     max_steps: 14000000
@@ -63,10 +63,10 @@ engine_settings:
   no_graphics: false
 environment_parameters: null
 checkpoint_settings:
-  run_id: standPerTimeNoModel02
+  run_id: standPerTimeNoModel11
   initialize_from: null
   load_model: false
-  resume: true
+  resume: false
   force: false
   train_model: false
   inference: false

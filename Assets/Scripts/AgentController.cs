@@ -31,6 +31,7 @@ public class AgentController : Agent
 	
 	private float episodeTimer = 65f;
 	private float maxDiffDistance;
+	private float latestDistance;
 	
 	void Start()
 	{
@@ -80,6 +81,8 @@ public class AgentController : Agent
 		Renderer goalRenderer = goal.GetComponent<Renderer>();
 		goalRenderer.material = goalNormalMaterial;
 		goalController.isPressed = false;
+		
+		latestDistance  = Vector3.Distance(CalculateCentroid(), goal.position);
 		
 		StartCoroutine(ResetBodyParts());
 	}
@@ -183,8 +186,8 @@ public class AgentController : Agent
 	
 	public void GoalIsPressed()
 	{
-		Debug.Log("Agent hit the pad!");
-		AddReward(20f);
+		// Debug.Log("Agent hit the pad!");
+		AddReward(200f);
 		AddReward(episodeTimer);
 		EndEpisode();
 	}
@@ -209,15 +212,13 @@ public class AgentController : Agent
 		
 		if (currentTime != previousTime && currentTime <= 60)
 		{
-			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position);
+			// Boost distance to encourage walk further
+			Vector3 goalBuff = new Vector3(goal.position.x + 20, goal.position.y, goal.position.z);
+			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goalBuff);
 			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
 			AddReward(distReward);
 			
-			if (isLeftFootOnFloor)
-			{
-				AddReward(1f);
-			}
-			if (isRightFootOnFloor)
+			if (isLeftFootOnFloor | isRightFootOnFloor)
 			{
 				AddReward(1f);
 			}
