@@ -1,0 +1,65 @@
+{
+    "Agent Controller": {
+        "checkpoints": [
+            {
+                "steps": 6999928,
+                "file_path": "results\\rayHideWall11\\Agent Controller\\Agent Controller-6999928.onnx",
+                "reward": -218.38622636061447,
+                "creation_time": 1714269404.059799,
+                "auxillary_file_paths": [
+                    "results\\rayHideWall11\\Agent Controller\\Agent Controller-6999928.pt"
+                ]
+            },
+            {
+                "steps": 7499561,
+                "file_path": "results\\rayHideWall11\\Agent Controller\\Agent Controller-7499561.onnx",
+                "reward": -163.4610069537985,
+                "creation_time": 1714269908.8202684,
+                "auxillary_file_paths": [
+                    "results\\rayHideWall11\\Agent Controller\\Agent Controller-7499561.pt"
+                ]
+            },
+            {
+                "steps": 7999879,
+                "file_path": "results\\rayHideWall11\\Agent Controller\\Agent Controller-7999879.onnx",
+                "reward": -219.6423250834147,
+                "creation_time": 1714270413.3098416,
+                "auxillary_file_paths": [
+                    "results\\rayHideWall11\\Agent Controller\\Agent Controller-7999879.pt"
+                ]
+            },
+            {
+                "steps": 8003469,
+                "file_path": "results\\rayHideWall11\\Agent Controller\\Agent Controller-8003469.onnx",
+                "reward": -175.50819690410907,
+                "creation_time": 1714270430.682027,
+                "auxillary_file_paths": [
+                    "results\\rayHideWall11\\Agent Controller\\Agent Controller-8003469.pt"
+                ]
+            },
+            {
+                "steps": 8449786,
+                "file_path": "results\\rayHideWall11\\Agent Controller\\Agent Controller-8449786.onnx",
+                "reward": -296.1662742213199,
+                "creation_time": 1714271448.9220393,
+                "auxillary_file_paths": [
+                    "results\\rayHideWall11\\Agent Controller\\Agent Controller-8449786.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 8449786,
+            "file_path": "results\\rayHideWall11\\Agent Controller.onnx",
+            "reward": -296.1662742213199,
+            "creation_time": 1714271448.9220393,
+            "auxillary_file_paths": [
+                "results\\rayHideWall11\\Agent Controller\\Agent Controller-8449786.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.3.0+cu118"
+    }
+}

@@ -7,12 +7,17 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using TMPro;
 
+using Random = UnityEngine.Random;
+
 public class AgentController : Agent
 {
 	[SerializeField] private Rigidbody[] bodyParts;
 	[SerializeField] private Transform[] feet;
 	private bool isLeftFootOnFloor = false;
 	private bool isRightFootOnFloor = false;
+	// private bool wasLeftFootOnFloor = false;
+	// private bool wasRightFootOnFloor = false;
+	// private float timeSinceLastStep = 0f;
 	
 	private Dictionary<string, bool> bodyPartTouchingFloor = new Dictionary<string, bool>();
 	
@@ -22,16 +27,30 @@ public class AgentController : Agent
 	[SerializeField] private Transform goal;
 	[SerializeField] private Material goalNormalMaterial;
 	private Vector3 initialGoalPosition;
+	private Renderer goalRenderer;
+	
+	[SerializeField] private CheckpointController cp1Controller;
+	[SerializeField] private CheckpointController cp2Controller;
+	[SerializeField] private Transform checkpoint1;
+	[SerializeField] private Transform checkpoint2;
+	[SerializeField] private Material checpointNormalMaterial;
+	private Vector3 initialCP1Position;
+	private Vector3 initialCP2Position;
+	private Renderer checkpoint1Renderer;
+	private Renderer checkpoint2Renderer;
 	
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
 	
+	[SerializeField] private Transform firstWall;
+	[SerializeField] private Transform secondWall;
+	private Vector3 initialFirstWallPosition;
+	private Vector3 initialSecondWallPosition;
 	
 	public float rotationSpeed = 800000000f;
 	
 	private float episodeTimer = 65f;
 	private float maxDiffDistance;
-	private float latestDistance;
 	
 	void Start()
 	{
@@ -57,6 +76,16 @@ public class AgentController : Agent
         initialRotations = new Quaternion[bodyParts.Length];
 		
 		initialGoalPosition = goal.position;
+		goalRenderer = goal.GetComponent<Renderer>();
+		
+		checkpoint1Renderer = checkpoint1.GetComponent<Renderer>();
+		checkpoint2Renderer = checkpoint2.GetComponent<Renderer>();
+		
+		initialCP1Position = checkpoint1.position;
+		initialCP2Position = checkpoint2.position;
+		
+		initialFirstWallPosition = firstWall.position;
+		initialSecondWallPosition = secondWall.position;
 		
 		maxDiffDistance = Vector3.Distance(goal.position, transform.position);
 
@@ -78,11 +107,30 @@ public class AgentController : Agent
 		
 		// Reset the position and material of the goal
 		goal.position = initialGoalPosition;
-		Renderer goalRenderer = goal.GetComponent<Renderer>();
 		goalRenderer.material = goalNormalMaterial;
 		goalController.isPressed = false;
 		
-		latestDistance  = Vector3.Distance(CalculateCentroid(), goal.position);
+		// Reset the position and material of two checkpoint pads
+		checkpoint1Renderer.material = checpointNormalMaterial;
+		checkpoint2Renderer.material = checpointNormalMaterial;
+		cp1Controller.isPressed = false;
+		cp2Controller.isPressed = false;
+		
+		// int rand = Random.Range(0, 2);
+		// if (rand == 0)
+		// {
+			// firstWall.position = new Vector3(initialFirstWallPosition.x, initialFirstWallPosition.y, initialFirstWallPosition.z - 3.4f);
+			// secondWall.position = new Vector3(initialSecondWallPosition.x, initialSecondWallPosition.y, initialSecondWallPosition.z + 3.4f);
+			// checkpoint1.position = new Vector3(initialCP1Position.x, initialCP1Position.y, initialCP1Position.z + 6.7f);
+			// checkpoint2.position = new Vector3(initialCP2Position.x, initialCP2Position.y, initialCP2Position.z - 6.7f);
+		// }
+		// else
+		// {
+			// firstWall.position = initialFirstWallPosition;
+			// secondWall.position = initialSecondWallPosition;
+			// checkpoint1.position = initialCP1Position;
+			// checkpoint2.position = initialCP2Position;
+		// }
 		
 		StartCoroutine(ResetBodyParts());
 	}
@@ -186,10 +234,19 @@ public class AgentController : Agent
 	
 	public void GoalIsPressed()
 	{
-		// Debug.Log("Agent hit the pad!");
-		AddReward(200f);
+		AddReward(20f);
 		AddReward(episodeTimer);
 		EndEpisode();
+	}
+	
+	public void CheckpointIsPressed()
+	{
+		AddReward(1f);
+	}
+	
+	public void ObstacleIsTriggered()
+	{
+		AddReward(-0.5f);
 	}
 	
 	public void BodyFloorRewards()
@@ -207,6 +264,7 @@ public class AgentController : Agent
     {
 		float previousTime = Mathf.CeilToInt(episodeTimer);
 		episodeTimer -= Time.deltaTime;
+		// timeSinceLastStep += Time.deltaTime;
 		float currentTime = Mathf.CeilToInt(episodeTimer);
         UpdateTimerDisplay();
 		
@@ -225,9 +283,13 @@ public class AgentController : Agent
 			
 			BodyFloorRewards();
 			
-			if (bodyParts[1].position.y > 1.45f)
+			if (bodyParts[1].position.y < 1.45f)
 			{
-				AddReward(2f);
+				AddReward(-2f);
+			}
+			else
+			{
+				AddReward(1f);
 			}
 		}
         if (episodeTimer <= 0f)
@@ -236,6 +298,22 @@ public class AgentController : Agent
 			// Debug.Log($"Total reward this episode: {totalReward}");
             EndEpisode();
         }
+		
+		// if (isLeftFootOnFloor != wasLeftFootOnFloor || isRightFootOnFloor != wasRightFootOnFloor)
+			// {
+				// if (isLeftFootOnFloor != isRightFootOnFloor)
+				// {
+					// AddReward(1f);
+					// timeSinceLastStep = 0f;
+				// }
+			// }
+			// else if (Mathf.CeilToInt(timeSinceLastStep) >= 2)
+			// {
+				// AddReward(-0.01f);
+			// }
+
+		// wasLeftFootOnFloor = isLeftFootOnFloor;
+		// wasRightFootOnFloor = isRightFootOnFloor;
 		
 		for (int i = 0; i < bodyParts.Length; i++)
 		{
