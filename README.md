@@ -72,7 +72,7 @@ git clone https://github.com/yourusername/unity-ml-agents-curriculum-training.gi
 * After creating the first new Unity Project, replace the folders under our repository.
 * Choose one of the brains under our `Assets` folder and drag it into the agent's inspector.
 
-![image-20240429225950598](E:\Github\RL_robot\imgs\img01.png)
+![image-20240429225950598](imgs/img01.png)
 
 * Enter play mode to check with the brain model
 
@@ -80,7 +80,13 @@ git clone https://github.com/yourusername/unity-ml-agents-curriculum-training.gi
 
 ### Curriculum Training - Phase 1: Basic Navigation
 
+https://github.com/MissTiny/RL_robot/assets/67780872/432d5ec9-7aaa-410d-96c9-a52a083a33fa
+
 ### Curriculum Training - Phase 2: Balanced Walking
 
+https://github.com/MissTiny/RL_robot/assets/67780872/77686d1b-b5cd-434e-8728-5a02ba33cec9
+
 ### Curriculum Training - Phase 3: Complex Navigation with Obstacles
+
+https://github.com/MissTiny/RL_robot/assets/67780872/5eb6dd42-d10c-4c53-b0b5-08b70744dc47
 
