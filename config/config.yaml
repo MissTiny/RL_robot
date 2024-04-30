@@ -19,7 +19,8 @@ behaviors:
       extrinsic:
         gamma: 0.995
         strength: 1.0
-    init_path: "Models/curriculum03-02/Agent Controller/checkpoint.pt"
+    #init_path: "Models/curriculum03-02/Agent Controller/checkpoint.pt"
+    init_path: "results/Test03/Agent Controller/checkpoint.pt"
     keep_checkpoints: 5
     checkpoint_interval: 500000
     max_steps: 42000000

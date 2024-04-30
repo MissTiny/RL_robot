@@ -33,11 +33,49 @@ public class AgentController : Agent
 	[SerializeField] private CheckpointController cp2Controller;
 	[SerializeField] private Transform checkpoint1;
 	[SerializeField] private Transform checkpoint2;
+	[SerializeField] private CheckpointController cp3Controller;
+	[SerializeField] private CheckpointController cp4Controller;
+	[SerializeField] private Transform checkpoint3;
+	[SerializeField] private Transform checkpoint4;
+	[SerializeField] private CheckpointController cp5Controller;
+	[SerializeField] private CheckpointController cp6Controller;
+	[SerializeField] private Transform checkpoint5;
+	[SerializeField] private Transform checkpoint6;
+	[SerializeField] private CheckpointController cp7Controller;
+	[SerializeField] private CheckpointController cp8Controller;
+	[SerializeField] private Transform checkpoint7;
+	[SerializeField] private Transform checkpoint8;
+	[SerializeField] private CheckpointController cp9Controller;
+	[SerializeField] private CheckpointController cp10Controller;
+	[SerializeField] private Transform checkpoint9;
+	[SerializeField] private Transform checkpoint10;
+	[SerializeField] private CheckpointController cp11Controller;
+	[SerializeField] private CheckpointController cp12Controller;
+	[SerializeField] private Transform checkpoint11;
+	[SerializeField] private Transform checkpoint12;
+	[SerializeField] private CheckpointController cp13Controller;
+	[SerializeField] private CheckpointController cp14Controller;
+	[SerializeField] private Transform checkpoint13;
+	[SerializeField] private Transform checkpoint14;
+	
 	[SerializeField] private Material checpointNormalMaterial;
 	private Vector3 initialCP1Position;
 	private Vector3 initialCP2Position;
 	private Renderer checkpoint1Renderer;
 	private Renderer checkpoint2Renderer;
+	private Renderer checkpoint3Renderer;
+	private Renderer checkpoint4Renderer;
+	private Renderer checkpoint5Renderer;
+	private Renderer checkpoint6Renderer;
+	private Renderer checkpoint7Renderer;
+	private Renderer checkpoint8Renderer;
+	private Renderer checkpoint9Renderer;
+	private Renderer checkpoint10Renderer;
+	private Renderer checkpoint11Renderer;
+	private Renderer checkpoint12Renderer;
+	private Renderer checkpoint13Renderer;
+	private Renderer checkpoint14Renderer;
+
 	
 	private Vector3[] initialPositions;
     private Quaternion[] initialRotations;
@@ -49,8 +87,12 @@ public class AgentController : Agent
 	
 	public float rotationSpeed = 800000000f;
 	
-	private float episodeTimer = 65f;
+	private float episodeMaxTimer = 65f;
+	private float  resetDuration = 5f;
+	private float episodeTimer;
 	private float maxDiffDistance;
+	private float latestDistance; 
+	private bool initDistance;
 	
 	void Start()
 	{
@@ -80,7 +122,20 @@ public class AgentController : Agent
 		
 		checkpoint1Renderer = checkpoint1.GetComponent<Renderer>();
 		checkpoint2Renderer = checkpoint2.GetComponent<Renderer>();
-		
+		checkpoint3Renderer = checkpoint3.GetComponent<Renderer>();
+		checkpoint4Renderer = checkpoint4.GetComponent<Renderer>();
+		checkpoint5Renderer = checkpoint5.GetComponent<Renderer>();
+		checkpoint6Renderer = checkpoint6.GetComponent<Renderer>();
+		checkpoint7Renderer = checkpoint7.GetComponent<Renderer>();
+		checkpoint8Renderer = checkpoint8.GetComponent<Renderer>();
+		checkpoint9Renderer = checkpoint9.GetComponent<Renderer>();
+		checkpoint10Renderer = checkpoint10.GetComponent<Renderer>();
+		checkpoint11Renderer = checkpoint11.GetComponent<Renderer>();
+		checkpoint12Renderer = checkpoint12.GetComponent<Renderer>();
+		checkpoint13Renderer = checkpoint13.GetComponent<Renderer>();
+		checkpoint14Renderer = checkpoint14.GetComponent<Renderer>();
+
+
 		initialCP1Position = checkpoint1.position;
 		initialCP2Position = checkpoint2.position;
 		
@@ -103,7 +158,7 @@ public class AgentController : Agent
 	public override void OnEpisodeBegin()
 	{
 		UpdateTimerDisplay();
-		episodeTimer = 65f;
+		episodeTimer = episodeMaxTimer;
 		
 		// Reset the position and material of the goal
 		goal.position = initialGoalPosition;
@@ -115,7 +170,32 @@ public class AgentController : Agent
 		checkpoint2Renderer.material = checpointNormalMaterial;
 		cp1Controller.isPressed = false;
 		cp2Controller.isPressed = false;
-		
+
+		checkpoint3Renderer.material = checpointNormalMaterial;
+		checkpoint4Renderer.material = checpointNormalMaterial;
+		cp3Controller.isPressed = false;
+		cp4Controller.isPressed = false;
+		checkpoint5Renderer.material = checpointNormalMaterial;
+		checkpoint6Renderer.material = checpointNormalMaterial;
+		cp5Controller.isPressed = false;
+		cp6Controller.isPressed = false;
+		checkpoint7Renderer.material = checpointNormalMaterial;
+		checkpoint8Renderer.material = checpointNormalMaterial;
+		cp7Controller.isPressed = false;
+		cp8Controller.isPressed = false;
+		checkpoint9Renderer.material = checpointNormalMaterial;
+		checkpoint10Renderer.material = checpointNormalMaterial;
+		cp9Controller.isPressed = false;
+		cp10Controller.isPressed = false;
+		checkpoint11Renderer.material = checpointNormalMaterial;
+		checkpoint12Renderer.material = checpointNormalMaterial;
+		cp11Controller.isPressed = false;
+		cp12Controller.isPressed = false;
+		checkpoint13Renderer.material = checpointNormalMaterial;
+		checkpoint14Renderer.material = checpointNormalMaterial;
+		cp13Controller.isPressed = false;
+		cp14Controller.isPressed = false;
+		initDistance=false;
 		// int rand = Random.Range(0, 2);
 		// if (rand == 0)
 		// {
@@ -132,7 +212,10 @@ public class AgentController : Agent
 			// checkpoint2.position = initialCP2Position;
 		// }
 		
+		//StartCoroutine(ResetBodyParts());
 		StartCoroutine(ResetBodyParts());
+
+		Debug.Log($"Episode Begins"); 
 	}
 	
 	private IEnumerator ResetBodyParts()
@@ -147,7 +230,7 @@ public class AgentController : Agent
 			}
 		}
 
-		float resetDuration = 5f; // Five seconds to reset
+		//float resetDuration = 5f; // Five seconds to reset
 		float timer = 0;
 
 		while (timer < resetDuration)
@@ -235,18 +318,22 @@ public class AgentController : Agent
 	public void GoalIsPressed()
 	{
 		AddReward(20f);
+		
 		AddReward(episodeTimer);
+		Debug.Log($"Goal is Pressed at {episodeTimer}"); 
 		EndEpisode();
 	}
 	
 	public void CheckpointIsPressed()
 	{
-		AddReward(1f);
+		AddReward(10f);
+		Debug.Log($"CheckPoint is Pressed at {episodeTimer}"); 
 	}
 	
 	public void ObstacleIsTriggered()
 	{
-		AddReward(-0.5f);
+		AddReward(-0.1f);
+		Debug.Log($"Obstacle is Triggered at {episodeTimer}"); 
 	}
 	
 	public void BodyFloorRewards()
@@ -262,20 +349,35 @@ public class AgentController : Agent
 	
     public override void OnActionReceived(ActionBuffers actions)
     {
+
 		float previousTime = Mathf.CeilToInt(episodeTimer);
 		episodeTimer -= Time.deltaTime;
 		// timeSinceLastStep += Time.deltaTime;
 		float currentTime = Mathf.CeilToInt(episodeTimer);
         UpdateTimerDisplay();
-		
-		if (currentTime != previousTime && currentTime <= 60)
+		if (initDistance == false && currentTime==episodeMaxTimer - resetDuration)
+		{
+			latestDistance  = Vector3.Distance(CalculateCentroid(), goal.position); 
+			initDistance=true;
+			Debug.Log($"Time {currentTime}., Episode Begins. Current Distance to Goal: {latestDistance}");
+		}
+				
+		if (currentTime != previousTime && currentTime <= episodeMaxTimer - resetDuration)
 		{
 			// Boost distance to encourage walk further
-			Vector3 goalBuff = new Vector3(goal.position.x + 20, goal.position.y, goal.position.z);
-			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goalBuff);
-			float distReward = -Mathf.Exp(0.1f * distanceToGoal);
-			AddReward(distReward);
-			
+			// Vector3 goalBuff = new Vector3(goal.position.x + 20, goal.position.y, goal.position.z);
+			// float distanceToGoal = Vector3.Distance(CalculateCentroid(), goalBuff);
+			// float distReward = -Mathf.Exp(0.1f * distanceToGoal);
+			// AddReward(distReward);
+
+			float distanceToGoal = Vector3.Distance(CalculateCentroid(), goal.position); 
+			float distReward = latestDistance - distanceToGoal; 
+			if (distReward >0){
+				latestDistance = distanceToGoal; 
+				AddReward(distReward);
+			}
+ 
+			//Debug.Log($"Action taken: Current distance from goal is {latestDistance}, Reward {distReward}");
 			if (isLeftFootOnFloor | isRightFootOnFloor)
 			{
 				AddReward(1f);
@@ -296,6 +398,7 @@ public class AgentController : Agent
         {
 			// float totalReward = GetCumulativeReward();
 			// Debug.Log($"Total reward this episode: {totalReward}");
+			Debug.Log($"Times up: Current Body Position is {CalculateCentroid()}");
             EndEpisode();
         }
 		

@@ -22,7 +22,7 @@ public class CheckpointController : MonoBehaviour
         if (!isPressed&&other.gameObject.tag == "Agent")
         {
             isPressed = true;
-            StartCoroutine("MoveButton", transform.position + pressedPositionOffset);
+            //StartCoroutine("MoveButton", transform.position + pressedPositionOffset);
             GetComponent<Renderer>().material = pressedMaterial;
 			agentController.CheckpointIsPressed();
         }

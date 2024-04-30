@@ -9,6 +9,7 @@ public class GoalController : MonoBehaviour
 	public Material normalMaterial;
 	public Material pressedMaterial;
 	public Vector3 pressedPositionOffset = new Vector3(0, -0.05f, 0);
+    public Renderer Plane;
 	public float speed = 1.0f;
 	public bool isPressed = false;
 	
@@ -22,8 +23,9 @@ public class GoalController : MonoBehaviour
         if (!isPressed&&other.gameObject.tag == "Agent")
         {
             isPressed = true;
-            StartCoroutine("MoveButton", transform.position + pressedPositionOffset);
-            GetComponent<Renderer>().material = pressedMaterial;
+            //StartCoroutine("MoveButton", transform.position + pressedPositionOffset);
+            //GetComponent<Renderer>().material = pressedMaterial;
+            Plane.material = pressedMaterial;
 			agentController.GoalIsPressed();
         }
     }
