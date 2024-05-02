@@ -90,3 +90,15 @@ https://github.com/MissTiny/RL_robot/assets/67780872/77686d1b-b5cd-434e-8728-5a0
 
 https://github.com/MissTiny/RL_robot/assets/67780872/5eb6dd42-d10c-4c53-b0b5-08b70744dc47
 
+
+## Folder Description
+
+- **Brians** contains trained models corresponding to each curriculum.
+- **Materials** contains color settings for objects.
+- **Prefabs**  contains all objects we created, e.g. robots, enviornment.
+- **Scripts** contains all the code we write.
+  - **AgentController** is the main file to train the agent robot.
+  - **CheckpointController**, **Goal Controller**  are files to make updates on status of checkpoint/goal button, so that we can add points when the robot hits the wall
+  - **WallController** is a file to detect the collision so that we can deduct points when the robot hits the wall
+  - **LeftFootController**,**RightFootController** are files to deduct if agent is standing so that we can add or deduct points for walking. 
+  - **Camera Controller** is code to control the camera to move along with agent.
